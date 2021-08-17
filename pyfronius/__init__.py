@@ -532,7 +532,9 @@ class Fronius:
             }
         if "DeviceStatus" in data:
             if "InverterState" in data["DeviceStatus"]:
-                sensor["inverter_state"] = {"value": data["DeviceStatus"]["InverterState"]}
+                sensor["inverter_state"] = {
+                    "value": data["DeviceStatus"]["InverterState"]
+                }
             if "ErrorCode" in data["DeviceStatus"]:
                 sensor["error_code"] = {"value": data["DeviceStatus"]["ErrorCode"]}
             if "StatusCode" in data["DeviceStatus"]:
