@@ -49,7 +49,7 @@ class NoFroniusWebTest(unittest.TestCase):
                 self.fronius.current_system_meter_data()
             )
             self.fail("No Exception for failed connection to fronius")
-        except ConnectionError:
+        except pyfronius.FroniusConnectionError:
             pass
         finally:
             asyncio.get_event_loop().run_until_complete(self.session.close())

@@ -43,7 +43,7 @@ class NoFroniusWebTest(unittest.TestCase):
                 self.fronius.current_system_inverter_data()
             )
             self.fail("No Exception for failed connection to fronius")
-        except ConnectionError:
+        except pyfronius.FroniusConnectionError:
             asyncio.get_event_loop().run_until_complete(self.session.close())
 
     def test_wrong_server(self):
