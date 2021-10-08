@@ -119,20 +119,20 @@ class FroniusError(Exception):
     """
 
 
-class NotSupportedError(ValueError, FroniusError):
+class NotSupportedError(FroniusError):
     """
     An error to be raised if a specific feature
     is not supported by the specified device
     """
 
 
-class ConnectionError(ConnectionError, FroniusError):
+class FroniusConnectionError(FroniusError):
     """
     An error to be raised if the connection to the fronius device failed
     """
 
 
-class InvalidAnswerError(ValueError, FroniusError):
+class InvalidAnswerError(FroniusError):
     """
     An error to be raised if the host Fronius device could not answer a request
     """
@@ -192,11 +192,11 @@ class Fronius:
             async with self._aio_session.get(url) as res:
                 result = await res.json(content_type=None)
         except asyncio.TimeoutError:
-            raise ConnectionError(
+            raise FroniusConnectionError(
                 "Connection to Fronius device timed out at {}.".format(url)
             )
         except aiohttp.ClientError:
-            raise ConnectionError(
+            raise FroniusConnectionError(
                 "Connection to Fronius device failed at {}.".format(url)
             )
         except (aiohttp.ContentTypeError, json.decoder.JSONDecodeError):
