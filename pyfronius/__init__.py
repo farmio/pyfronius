@@ -7,9 +7,9 @@ Created on 27.09.2017
 
 import asyncio
 import enum
-from html import unescape
 import json
 import logging
+from html import unescape
 from typing import Any, Dict
 
 import aiohttp
@@ -27,7 +27,6 @@ HERTZ = "Hz"
 VOLTAMPEREREACTIVE = "VAr"
 VOLTAMPEREREACTIVE_HOUR = "VArh"
 VOLTAMPERE = "VA"
-PER_KILOWATTHOUR = "{}/kWh"
 
 
 class API_VERSION(enum.Enum):
@@ -52,9 +51,7 @@ URL_SYSTEM_INVERTER = {
 }
 URL_SYSTEM_LED = {API_VERSION.V1: "GetLoggerLEDInfo.cgi"}
 URL_SYSTEM_OHMPILOT = {API_VERSION.V1: "GetOhmPilotRealtimeData.cgi?Scope=System"}
-URL_SYSTEM_STORAGE = {
-    API_VERSION.V1: "GetStorageRealtimeData.cgi?Scope=System"
-}
+URL_SYSTEM_STORAGE = {API_VERSION.V1: "GetStorageRealtimeData.cgi?Scope=System"}
 URL_DEVICE_METER = {API_VERSION.V1: "GetMeterRealtimeData.cgi?Scope=Device&DeviceId={}"}
 URL_DEVICE_STORAGE = {
     API_VERSION.V1: "GetStorageRealtimeData.cgi?Scope=Device&DeviceId={}"
@@ -141,13 +138,14 @@ class InvalidAnswerError(ValueError, FroniusError):
 
 class BadStatusError(FroniusError):
     """A bad status code was returned."""
+
     def __init__(
-            self,
-            endpoint: str,
-            code: int,
-            reason: str = None,
-            response: Dict[str, Any] = {},
-            ) -> None:
+        self,
+        endpoint: str,
+        code: int,
+        reason: str = None,
+        response: Dict[str, Any] = {},
+    ) -> None:
         """Instantiate exception."""
         self.response = response
         message = (
@@ -623,7 +621,7 @@ class Fronius:
             device["state_code"] = {"value": state_code}
             device["state_message"] = {
                 "value": OHMPILOT_STATE_CODES.get(state_code, "Unknown")
-                }
+            }
 
         if "Details" in data:
             device["hardware"] = {"value": data["Details"]["Hardware"]}
@@ -634,16 +632,18 @@ class Fronius:
 
         if "EnergyReal_WAC_Sum_Consumed" in data:
             device["energy_real_ac_consumed"] = {
-                "value": data["EnergyReal_WAC_Sum_Consumed"], "unit": WATT_HOUR
-                }
+                "value": data["EnergyReal_WAC_Sum_Consumed"],
+                "unit": WATT_HOUR,
+            }
 
         if "PowerReal_PAC_Sum" in data:
             device["power_real_ac"] = {"value": data["PowerReal_PAC_Sum"], "unit": WATT}
 
         if "Temperature_Channel_1" in data:
             device["temperature_channel_1"] = {
-                "value": data["Temperature_Channel_1"], "unit": DEGREE_CELSIUS
-                }
+                "value": data["Temperature_Channel_1"],
+                "unit": DEGREE_CELSIUS,
+            }
 
         return device
 
@@ -1188,21 +1188,19 @@ class Fronius:
         if "CO2Factor" in data and "CO2Unit" in data:
             sensor["co2_factor"] = {
                 "value": data["CO2Factor"],
-                "unit": PER_KILOWATTHOUR.format(data["CO2Unit"]),
+                "unit": f"{unescape(data['CO2Unit'])}/kWh",
             }
 
         if "CashFactor" in data and "CashCurrency" in data:
-            # which unit does this have?
             sensor["cash_factor"] = {
                 "value": data["CashFactor"],
-                "unit": PER_KILOWATTHOUR.format(data["CashCurrency"]),
+                "unit": f"{unescape(data['CashCurrency'])}/kWh",
             }
 
         if "DeliveryFactor" in data and "CashCurrency" in data:
-            # which unit does this have?
             sensor["delivery_factor"] = {
                 "value": data["DeliveryFactor"],
-                "unit": PER_KILOWATTHOUR.format(data["CashCurrency"]),
+                "unit": f"{unescape(data['CashCurrency'])}/kWh",
             }
 
         if "HWVersion" in data:
